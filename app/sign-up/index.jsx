@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   formContainer: {
-    width: "95%",
+    width: "90%",
     backgroundColor: Colors.dark.background_tint,
     padding: 20,
     borderRadius: 10,

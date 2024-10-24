@@ -10,7 +10,8 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { AntDesign } from "@expo/vector-icons";
 import { Colors } from "../../constants/Colors";
-import { useRouter } from "expo-router"; // Ensure you're using expo-router for navigation
+import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function UploadScreen() {
   const [image, setImage] = useState(null);
@@ -18,21 +19,24 @@ export default function UploadScreen() {
   const router = useRouter(); // Initialize router
 
   const pickImage = async () => {
-    let permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (permissionResult.granted === false) {
-      alert("Permission to access media is required!");
-      return;
-    }
+    // let permissionResult =
+    //   await ImagePicker.requestMediaLibraryPermissionsAsync();
+    // if (permissionResult.granted === false) {
+    //   alert("Permission to access media is required!");
+    //   return;
+    // }
 
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 4],
       quality: 0.85,
+      base64: true,
     });
 
     if (!result.canceled) {
+      // console.log(result);
+
       setPreviewImage(result.assets[0].uri);
       setImage(result.assets[0]);
     }
@@ -49,25 +53,33 @@ export default function UploadScreen() {
 
     const formData = new FormData();
     formData.append("file", {
-      uri: image.uri, // Use the uri of the image
-      type: image.type, // Use the type of the image
-      name: image.fileName || "photo.jpg", // Provide a name for the file
+      uri: image.uri,
+      name: "uploaded_image.jpg",
+      type: image.type || "image/jpeg",
     });
 
+    const token = await AsyncStorage.getItem("token");
+
     try {
-      const response = await fetch("http://10.0.2.2:5000/predict", {
+      const response = await fetch("http://192.168.1.5:5000/predict", {
         method: "POST",
         headers: {
-          Authorization: "Bearer " + localStorage.getItem("token"),
-          // Note: Don't set 'Content-Type' header when sending FormData
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
         },
         body: formData,
       });
 
+      console.log(response);
+
       if (response.ok) {
         const data = await response.json();
-        // Navigate to result screen with predicted class
-        router.push(`/result?predictedClass=${data.material}`);
+        // router.replace(`/result?predictedClass=${data.material}`);
+
+        router.replace({
+          pathname: "/result",
+          params: data?.material,
+        });
       } else {
         const errorData = await response.json();
         ToastAndroid.show(
