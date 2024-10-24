@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   ToastAndroid,
+  ActivityIndicator,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { AntDesign } from "@expo/vector-icons";
@@ -14,31 +15,27 @@ import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function UploadScreen() {
-  const [image, setImage] = useState(null);
-  const [previewImage, setPreviewImage] = useState(null);
+  const [image, setImage] = useState("");
+  const [previewImage, setPreviewImage] = useState("");
+  const [loading, setLoading] = useState(false); // Loading state
   const router = useRouter(); // Initialize router
 
   const pickImage = async () => {
-    // let permissionResult =
-    //   await ImagePicker.requestMediaLibraryPermissionsAsync();
-    // if (permissionResult.granted === false) {
-    //   alert("Permission to access media is required!");
-    //   return;
-    // }
-
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 4],
       quality: 0.85,
-      base64: true,
+      base64: true, // Enable base64
     });
 
     if (!result.canceled) {
-      // console.log(result);
-
       setPreviewImage(result.assets[0].uri);
-      setImage(result.assets[0]);
+      setImage(
+        `data:${result?.assets[0].mimeType || "image/jpeg"};base64,${
+          result.assets[0]?.base64
+        }`
+      );
     }
   };
 
@@ -51,13 +48,7 @@ export default function UploadScreen() {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("file", {
-      uri: image.uri,
-      name: "uploaded_image.jpg",
-      type: image.type || "image/jpeg",
-    });
-
+    setLoading(true); // Start loading
     const token = await AsyncStorage.getItem("token");
 
     try {
@@ -65,20 +56,18 @@ export default function UploadScreen() {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
+          "Content-Type": "application/json",
         },
-        body: formData,
+        body: JSON.stringify({
+          image: image,
+        }),
       });
-
-      console.log(response);
 
       if (response.ok) {
         const data = await response.json();
-        // router.replace(`/result?predictedClass=${data.material}`);
-
         router.replace({
           pathname: "/result",
-          params: data?.material,
+          params: { predictedClass: data.material },
         });
       } else {
         const errorData = await response.json();
@@ -93,8 +82,12 @@ export default function UploadScreen() {
         "An error occurred while uploading the file",
         ToastAndroid.SHORT
       );
+    } finally {
+      setLoading(false); // End loading
     }
   };
+
+  const isDisabled = !image || loading; // Disable condition
 
   return (
     <View style={styles.container}>
@@ -127,9 +120,22 @@ export default function UploadScreen() {
           )}
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.button} onPress={handleUpload}>
-          <AntDesign name="upload" size={20} color="white" />
-          <Text style={styles.buttonText}>Upload and Analyze</Text>
+        <TouchableOpacity
+          style={[styles.button, isDisabled && styles.buttonDisabled]} // Conditional style
+          onPress={handleUpload}
+          disabled={isDisabled} // Disable the button
+        >
+          {loading ? (
+            <>
+              <ActivityIndicator color="white" />
+              <Text style={styles.buttonText}>Uploading...</Text>
+            </>
+          ) : (
+            <>
+              <AntDesign name="upload" size={20} color="white" />
+              <Text style={styles.buttonText}>Upload and Analyze</Text>
+            </>
+          )}
         </TouchableOpacity>
       </View>
     </View>
@@ -140,7 +146,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.dark.background,
-    padding: 5,
+    padding: 10,
+    paddingHorizontal: 15,
     justifyContent: "center",
   },
   title: {
@@ -188,6 +195,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignSelf: "center",
     width: "100%",
+  },
+  buttonDisabled: {
+    opacity: 0.6, // Lighten the button by reducing opacity
   },
   buttonText: {
     fontSize: 18,

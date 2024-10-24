@@ -17,7 +17,7 @@ export default function Layout() {
               name="bars"
               size={30}
               color={Colors.dark.text_tint}
-              style={{ paddingLeft: 10 }}
+              style={{ paddingLeft: 20 }}
             />
           </Pressable>
         ),

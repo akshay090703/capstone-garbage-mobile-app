@@ -100,12 +100,12 @@ export default function Result() {
     <View style={styles.container}>
       <Animatable.View animation="fadeInUp" duration={500}>
         <View style={[styles.header]}>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             onPress={() => router.back()}
             style={{ position: "absolute", left: 20, top: 40 }}
           >
             <Ionicons name="arrow-back" size={24} color={Colors.dark.text} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <Text style={styles.title}>
             {material.icon} {material.title} Detected
           </Text>
@@ -182,8 +182,8 @@ export default function Result() {
                     animation="fadeIn"
                     style={styles.additionalInfo}
                   >
-                    Additional tips and information about this step can be added
-                    here.
+                    Oh Nice! So you are at this step in your trash disposal
+                    journey!
                   </Animatable.Text>
                 )}
               </TouchableOpacity>
@@ -287,9 +287,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   additionalInfo: {
+    fontFamily: "outfit",
     marginTop: 5,
     color: "#aec8ec",
-    fontSize: 14,
+    fontSize: 12,
     marginLeft: 34,
   },
   warningCard: {

@@ -84,9 +84,9 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontStyle: "outfit",
-    fontSize: 18,
+    fontSize: 17,
     color: Colors.dark.text,
-    width: "90%",
+    width: "85%",
     marginHorizontal: "auto",
     textAlign: "center",
     marginBottom: 30,
