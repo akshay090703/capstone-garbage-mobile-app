@@ -19,6 +19,7 @@ export default function UploadScreen() {
   const [previewImage, setPreviewImage] = useState("");
   const [loading, setLoading] = useState(false); // Loading state
   const router = useRouter(); // Initialize router
+  const server = process.env.EXPO_PUBLIC_SERVER_LINK;
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -52,7 +53,7 @@ export default function UploadScreen() {
     const token = await AsyncStorage.getItem("token");
 
     try {
-      const response = await fetch("http://192.168.1.5:5000/predict", {
+      const response = await fetch(`${server}/predict`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

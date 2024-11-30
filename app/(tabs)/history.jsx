@@ -22,6 +22,7 @@ const HistoryPage = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [isModalVisible, setModalVisible] = useState(false);
   const [selectedRecordId, setSelectedRecordId] = useState(null);
+  const server = process.env.EXPO_PUBLIC_SERVER_LINK;
 
   const router = useRouter();
 
@@ -29,7 +30,7 @@ const HistoryPage = () => {
     try {
       const token = await AsyncStorage.getItem("token");
       if (token) {
-        const response = await fetch("http://192.168.1.5:5000/history", {
+        const response = await fetch(`${server}/history`, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
@@ -77,16 +78,13 @@ const HistoryPage = () => {
     try {
       const token = await AsyncStorage.getItem("token");
       if (token && selectedRecordId) {
-        const response = await fetch(
-          `http://192.168.1.5:5000/delete/${selectedRecordId}`,
-          {
-            method: "DELETE",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const response = await fetch(`${server}/delete/${selectedRecordId}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
 
         if (response.ok) {
           fetchResults();
