@@ -8,6 +8,7 @@ import {
   Image,
   ScrollView,
   ToastAndroid,
+  ActivityIndicator,
 } from "react-native";
 import { Colors } from "../../constants/Colors";
 import { useAuth } from "../../lib/auth";
@@ -16,12 +17,15 @@ import { useRouter } from "expo-router";
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const router = useRouter();
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (email && password) {
-      login(email, password);
+      setLoading(true);
+      await login(email, password);
+      setLoading(false);
     } else {
       ToastAndroid.show("Please fill your credentials!", ToastAndroid.LONG);
     }
@@ -58,8 +62,19 @@ export default function LoginScreen() {
           value={password}
         />
 
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Log In</Text>
+        <TouchableOpacity
+          disabled={loading}
+          style={styles.button}
+          onPress={handleLogin}
+        >
+          {loading ? (
+            <View style={{ flexDirection: "row", gap: 2 }}>
+              <ActivityIndicator color="white" />
+              <Text style={styles.buttonText}>Logging In...</Text>
+            </View>
+          ) : (
+            <Text style={styles.buttonText}>Log In</Text>
+          )}
         </TouchableOpacity>
 
         <Text style={styles.signupText}>
