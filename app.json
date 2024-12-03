@@ -1,51 +1,17 @@
 {
   "expo": {
-    "name": "capstone-garbage-mobile-app",
-    "slug": "capstone-garbage-mobile-app",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
-    "userInterfaceStyle": "automatic",
-    "splash": {
-      "image": "./assets/images/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "ios": {
-      "supportsTablet": true
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "permissions": [
-        "INTERNET"
-      ],
-      "package": "com.app"
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
-    },
-    "plugins": [
-      "expo-router"
-    ],
-    "experiments": {
-      "typedRoutes": true
-    },
     "extra": {
       "eas": {
-        "projectId": "938c9792-eb38-4b6e-a3ed-759e63d4dbf4"
+        "projectId": "f74546b3-8e49-4282-8d2d-51a37f2c21cb"
       }
     },
     "runtimeVersion": {
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/938c9792-eb38-4b6e-a3ed-759e63d4dbf4"
-    }
+      "url": "https://u.expo.dev/f74546b3-8e49-4282-8d2d-51a37f2c21cb"
+    },
+    "android": {},
+    "ios": {}
   }
 }
